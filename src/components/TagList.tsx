@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { MuiButton } from './MuiButton';
 import { MuiHeading6 } from './MuiHeading6';
-import { MuiSpan } from './MuiSpan';
 import { MuiWrapper } from './MuiWrapper';
+import { MuiSelect, IItemSortBy } from './MuiSelect';
+import { MuiLabel } from './MuiLabel';
+import { MuiInput } from './MuiInput';
+import { List, ListItem, ListItemText } from '@mui/material';
 
 interface IItem {
   count: number;
@@ -12,25 +15,29 @@ interface IItem {
   name: string;
 }
 
-enum SortByField {
-  Popular = 'popular',
-  Activity = 'activity',
-  Name = 'name',
-}
+const sortByItems = [
+  { value: 'activity', label: 'Activity' },
+  { value: 'name', label: 'Name' },
+  { value: 'popular', label: 'Popular' },
+];
 
-enum SortDirection {
-  Ascending = 'asc',
-  Descending = 'desc',
-}
+const sortDirectionByItems = [
+  { value: 'desc', label: 'Descending' },
+  { value: 'asc', label: 'Ascending' },
+];
 
-function List() {
+function TagList() {
   const [tags, setTags] = useState<IItem[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
-  const [sortBy, setSortBy] = useState<'popular' | 'activity' | 'name'>(
-    'activity',
-  );
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [sortBy, setSortBy] = useState<IItemSortBy>({
+    value: 'activity',
+    label: 'Activity',
+  });
+  const [sortDirection, setSortDirection] = useState<IItemSortBy>({
+    value: 'desc',
+    label: 'Descending',
+  });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -39,7 +46,7 @@ function List() {
       try {
         setLoading(true);
         const res = await fetch(
-          `https://api.stackexchange.com/2.3/tags?order=${sortDirection}&sort=${sortBy}&site=stackoverflow&page=${currentPage}&pagesize=${itemsPerPage}`,
+          `https://api.stackexchange.com/2.3/tags?order=${sortDirection.value}&sort=${sortBy.value}&site=stackoverflow&page=${currentPage}&pagesize=${itemsPerPage}`,
         );
 
         if (res) {
@@ -54,17 +61,6 @@ function List() {
     };
     fetchData();
   }, [currentPage, itemsPerPage, sortBy, sortDirection]);
-
-  const handleSortByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedSortBy = e.target.value as SortByField;
-    setSortBy(selectedSortBy);
-  };
-
-  const handleSortDirectionChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    setSortDirection(e.target.value as SortDirection);
-  };
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -87,26 +83,26 @@ function List() {
     <MuiWrapper>
       <MuiHeading6 title="Tag Browser" />
       <div>
-        <MuiSpan title="Sort by:" />
-        <select value={sortBy} onChange={handleSortByChange}>
-          <option value="activity">Activity</option>
-          <option value="name">Name</option>
-          <option value="popular">Popular</option>
-        </select>
-        <select value={sortDirection} onChange={handleSortDirectionChange}>
-          <option value="desc">Descending</option>
-          <option value="asc">Ascending</option>
-        </select>
+        <MuiSelect
+          title="field"
+          sortBy={sortBy}
+          onChange={(o: IItemSortBy) => setSortBy(o)}
+          sortByItems={sortByItems}
+        />
+        <MuiSelect
+          title="direction"
+          sortBy={sortDirection}
+          onChange={(o: IItemSortBy) => setSortDirection(o)}
+          sortByItems={sortDirectionByItems}
+        />
       </div>
       <div>
-        <label>
-          Items per page:
-          <input
-            type="number"
-            value={itemsPerPage}
-            onChange={handleItemsPerPageChange}
+        <MuiLabel title="Items per page:">
+          <MuiInput
+            handleItemsPerPageChange={handleItemsPerPageChange}
+            itemsPerPage={itemsPerPage}
           />
-        </label>
+        </MuiLabel>
       </div>
       <div>
         {currentPage > 1 && (
@@ -122,15 +118,15 @@ function List() {
           />
         )}
       </div>
-      <ul>
+      <List>
         {tags.map((tag: IItem) => (
-          <li key={tag.name}>
-            {tag.name} - Count: {tag.count}
-          </li>
+          <ListItem key={tag.name}>
+            <ListItemText primary={`${tag.name} - Count: ${tag.count}`} />
+          </ListItem>
         ))}
-      </ul>
+      </List>
     </MuiWrapper>
   );
 }
 
-export default List;
+export default TagList;
