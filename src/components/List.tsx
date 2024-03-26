@@ -8,14 +8,29 @@ interface IItem {
   name: string;
 }
 
+enum SortByField {
+  Popular = 'popular',
+  Activity = 'activity',
+  Name = 'name',
+}
+
+enum SortDirection {
+  Ascending = 'asc',
+  Descending = 'desc',
+}
+
 function List() {
   const [tags, setTags] = useState<IItem[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [sortBy, setSortBy] = useState<'popular' | 'activity' | 'name'>(
+    'activity',
+  );
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     fetch(
-      `https://api.stackexchange.com/2.3/tags?order=desc&sort=popular&site=stackoverflow&page=${currentPage}&pagesize=${itemsPerPage}`,
+      `https://api.stackexchange.com/2.3/tags?order=${sortDirection}&sort=${sortBy}&site=stackoverflow&page=${currentPage}&pagesize=${itemsPerPage}`,
     )
       .then((res) => res.json())
       .then((data) => {
@@ -24,7 +39,18 @@ function List() {
         }
       })
       .catch((error) => console.error('Error fetching tags:', error));
-  }, [currentPage, itemsPerPage]);
+  }, [currentPage, itemsPerPage, sortBy, sortDirection]);
+
+  const handleSortByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedSortBy = e.target.value as SortByField;
+    setSortBy(selectedSortBy);
+  };
+
+  const handleSortDirectionChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    setSortDirection(e.target.value as SortDirection);
+  };
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -40,6 +66,18 @@ function List() {
       <h1>Tag Browser</h1>
       {tags.length > 0 && (
         <>
+          <div>
+            Sort by:
+            <select value={sortBy} onChange={handleSortByChange}>
+              <option value="activity">Activity</option>
+              <option value="name">Name</option>
+              <option value="popular">Popular</option>
+            </select>
+            <select value={sortDirection} onChange={handleSortDirectionChange}>
+              <option value="desc">Descending</option>
+              <option value="asc">Ascending</option>
+            </select>
+          </div>
           <div>
             <label>
               Items per page:
