@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { MuiButton } from './MuiButton';
+import { MuiHeading6 } from './MuiHeading6';
+import { MuiSpan } from './MuiSpan';
+import { MuiWrapper } from './MuiWrapper';
 
 interface IItem {
   count: number;
@@ -31,22 +35,24 @@ function List() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
-    fetch(
-      `https://api.stackexchange.com/2.3/tags?order=${sortDirection}&sort=${sortBy}&site=stackoverflow&page=${currentPage}&pagesize=${itemsPerPage}`,
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.items) {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `https://api.stackexchange.com/2.3/tags?order=${sortDirection}&sort=${sortBy}&site=stackoverflow&page=${currentPage}&pagesize=${itemsPerPage}`,
+        );
+
+        if (res) {
+          const data = await res.json();
           setTags(data.items);
+          setLoading(false);
         }
-      })
-      .catch((error) => {
-        setError(error.message);
-      })
-      .finally(() => {
+      } catch (error: unknown) {
         setLoading(false);
-      });
+        setError((error as Error).message);
+      }
+    };
+    fetchData();
   }, [currentPage, itemsPerPage, sortBy, sortDirection]);
 
   const handleSortByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -70,62 +76,60 @@ function List() {
   };
 
   if (error) {
-    return <div>Error fetching tags: {error}</div>;
+    return <MuiWrapper>Error fetching tags: {error}</MuiWrapper>;
   }
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <MuiWrapper>Loading...</MuiWrapper>;
   }
 
   return (
-    <div>
-      <h1>Tag Browser</h1>
-      {tags.length > 0 && (
-        <>
-          <div>
-            Sort by:
-            <select value={sortBy} onChange={handleSortByChange}>
-              <option value="activity">Activity</option>
-              <option value="name">Name</option>
-              <option value="popular">Popular</option>
-            </select>
-            <select value={sortDirection} onChange={handleSortDirectionChange}>
-              <option value="desc">Descending</option>
-              <option value="asc">Ascending</option>
-            </select>
-          </div>
-          <div>
-            <label>
-              Items per page:
-              <input
-                type="number"
-                value={itemsPerPage}
-                onChange={handleItemsPerPageChange}
-              />
-            </label>
-          </div>
-          <div>
-            {currentPage > 1 && (
-              <button onClick={() => handlePageChange(currentPage - 1)}>
-                Previous Page
-              </button>
-            )}
-            {tags.length === itemsPerPage && (
-              <button onClick={() => handlePageChange(currentPage + 1)}>
-                Next Page
-              </button>
-            )}
-          </div>
-          <ul>
-            {tags.map((tag: IItem) => (
-              <li key={tag.name}>
-                {tag.name} - Count: {tag.count}
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-    </div>
+    <MuiWrapper>
+      <MuiHeading6 title="Tag Browser" />
+      <div>
+        <MuiSpan title="Sort by:" />
+        <select value={sortBy} onChange={handleSortByChange}>
+          <option value="activity">Activity</option>
+          <option value="name">Name</option>
+          <option value="popular">Popular</option>
+        </select>
+        <select value={sortDirection} onChange={handleSortDirectionChange}>
+          <option value="desc">Descending</option>
+          <option value="asc">Ascending</option>
+        </select>
+      </div>
+      <div>
+        <label>
+          Items per page:
+          <input
+            type="number"
+            value={itemsPerPage}
+            onChange={handleItemsPerPageChange}
+          />
+        </label>
+      </div>
+      <div>
+        {currentPage > 1 && (
+          <MuiButton
+            title="Previous Page"
+            onClick={() => handlePageChange(currentPage - 1)}
+          />
+        )}
+        {tags.length === itemsPerPage && (
+          <MuiButton
+            title="Next page"
+            onClick={() => handlePageChange(currentPage + 1)}
+          />
+        )}
+      </div>
+      <ul>
+        {tags.map((tag: IItem) => (
+          <li key={tag.name}>
+            {tag.name} - Count: {tag.count}
+          </li>
+        ))}
+      </ul>
+    </MuiWrapper>
   );
 }
 
