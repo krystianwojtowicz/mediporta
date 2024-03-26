@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { MuiButton } from './MuiButton';
 import { MuiHeading6 } from './MuiHeading6';
-import { MuiWrapper } from './MuiWrapper';
+import MuiWrapper from './MuiWrapper';
 import { MuiSelect, IItemSortBy } from './MuiSelect';
 import { MuiLabel } from './MuiLabel';
 import { MuiInput } from './MuiInput';
