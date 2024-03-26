@@ -31,22 +31,38 @@ function List() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
-    fetch(
-      `https://api.stackexchange.com/2.3/tags?order=${sortDirection}&sort=${sortBy}&site=stackoverflow&page=${currentPage}&pagesize=${itemsPerPage}`,
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.items) {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `https://api.stackexchange.com/2.3/tags?order=${sortDirection}&sort=${sortBy}&site=stackoverflow&page=${currentPage}&pagesize=${itemsPerPage}`,
+        );
+
+        if (res) {
+          const data = await res.json();
           setTags(data.items);
         }
-      })
-      .catch((error) => {
-        setError(error.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      } catch (error: unknown) {
+        setError((error as Error).message);
+      }
+    };
+    fetchData();
+    // setLoading(true);
+    // fetch(
+    //   `https://api.stackexchange.com/2.3/tags?order=${sortDirection}&sort=${sortBy}&site=stackoverflow&page=${currentPage}&pagesize=${itemsPerPage}`,
+    // )
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     if (data.items) {
+    //       setTags(data.items);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     setError(error.message);
+    //   })
+    //   .finally(() => {
+    //     setLoading(false);
+    //   });
   }, [currentPage, itemsPerPage, sortBy, sortDirection]);
 
   const handleSortByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
