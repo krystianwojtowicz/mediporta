@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { MuiButton } from './MuiButton';
 import { MuiHeading6 } from './MuiHeading6';
 import { MuiWrapper } from './MuiWrapper';
@@ -45,20 +46,21 @@ function TagList() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await fetch(
+        const response = await axios.get(
           `https://api.stackexchange.com/2.3/tags?order=${sortDirection.value}&sort=${sortBy.value}&site=stackoverflow&page=${currentPage}&pagesize=${itemsPerPage}`,
         );
 
-        if (res) {
-          const data = await res.json();
-          setTags(data.items);
-          setLoading(false);
-        }
-      } catch (error: unknown) {
+        setTags(response.data.items);
         setLoading(false);
-        setError((error as Error).message);
+      } catch (error) {
+        setLoading(false);
+
+        if (error instanceof Error) {
+          setError(error.message);
+        }
       }
     };
+
     fetchData();
   }, [currentPage, itemsPerPage, sortBy, sortDirection]);
 
