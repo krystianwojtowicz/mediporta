@@ -92,6 +92,7 @@ function TagList() {
           sortByItems={sortByItems}
         />
         <MuiSelect
+          style={{ marginLeft: '10px' }}
           title="direction"
           sortBy={sortDirection}
           onChange={(o: IItemSortBy) => setSortDirection(o)}

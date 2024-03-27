@@ -10,6 +10,7 @@ interface IMuiSelect {
   onChange: (value: IItemSortBy) => void;
   sortBy: IItemSortBy;
   title: string;
+  style?: React.CSSProperties;
 }
 
 export const MuiSelect = ({
@@ -17,12 +18,13 @@ export const MuiSelect = ({
   sortBy,
   sortByItems,
   title,
+  style,
 }: IMuiSelect) => {
   const selectOption = (option: IItemSortBy) => {
     onChange(option);
   };
   return (
-    <FormControl style={{ margin: '10px' }}>
+    <FormControl style={style}>
       <InputLabel id="sort-by-label">Sort by {title}</InputLabel>
       <Select labelId="sort-by-label" id="sort-by" value={sortBy.value}>
         {sortByItems.map((item: IItemSortBy) => (
