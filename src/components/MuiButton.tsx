@@ -1,6 +1,6 @@
 import { Button } from '@mui/material';
 
-interface IButton {
+export interface IButton {
   title: string;
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }

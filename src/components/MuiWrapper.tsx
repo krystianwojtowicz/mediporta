@@ -1,6 +1,10 @@
 import Box from '@mui/material/Box';
 
-const MuiWrapper = ({ children }: { children: React.ReactNode }) => {
+interface IMuiWrapper {
+  children: React.ReactNode;
+}
+
+export const MuiWrapper = ({ children }: IMuiWrapper) => {
   return (
     <Box
       sx={{

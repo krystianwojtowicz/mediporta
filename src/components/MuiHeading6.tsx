@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography';
 
-interface IMuiHeading6 {
+export interface IMuiHeading6 {
   title: string;
 }
 
