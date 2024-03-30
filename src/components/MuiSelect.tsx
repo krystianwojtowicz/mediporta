@@ -1,7 +1,7 @@
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { IItemSortBy } from '../store/dataSlice';
 
-type IMuiSelect = {
+export type IMuiSelect = {
   sortByItems: IItemSortBy[];
   onChange: (value: IItemSortBy) => void;
   sortBy: IItemSortBy;

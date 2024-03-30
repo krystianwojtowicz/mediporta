@@ -1,6 +1,6 @@
 import { TextField } from '@mui/material';
 
-interface IMuiInput {
+export interface IMuiInput {
   itemsPerPage: number;
   handleItemsPerPageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }

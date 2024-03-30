@@ -15,3 +15,4 @@ export const MuiWrapper = ({ children }: IMuiWrapper) => {
     </Box>
   );
 };
+export default MuiWrapper;
