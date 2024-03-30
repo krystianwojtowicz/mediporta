@@ -1,17 +1,13 @@
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { IItemSortBy } from '../store/dataSlice';
 
-export interface IItemSortBy {
-  value: string;
-  label: string;
-}
-
-interface IMuiSelect {
+type IMuiSelect = {
   sortByItems: IItemSortBy[];
   onChange: (value: IItemSortBy) => void;
   sortBy: IItemSortBy;
   title: string;
   style?: React.CSSProperties;
-}
+};
 
 export const MuiSelect = ({
   onChange,

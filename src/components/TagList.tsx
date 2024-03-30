@@ -1,83 +1,60 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useEffect } from 'react';
 import { MuiButton } from './MuiButton';
 import { MuiHeading6 } from './MuiHeading6';
 import { MuiWrapper } from './MuiWrapper';
-import { MuiSelect, IItemSortBy } from './MuiSelect';
+import { MuiSelect } from './MuiSelect';
 import { MuiLabel } from './MuiLabel';
 import { MuiInput } from './MuiInput';
 import { List, ListItem, ListItemText } from '@mui/material';
-
-interface IItem {
-  count: number;
-  has_synonyms: boolean;
-  is_moderator_only: boolean;
-  is_required: boolean;
-  name: string;
-}
-
-const sortByItems = [
-  { value: 'activity', label: 'Activity' },
-  { value: 'name', label: 'Name' },
-  { value: 'popular', label: 'Popular' },
-];
-
-const sortDirectionByItems = [
-  { value: 'desc', label: 'Descending' },
-  { value: 'asc', label: 'Ascending' },
-];
+import {
+  IItem,
+  IItemSortBy,
+  changeCurrentPage,
+  changeItemsPerPage,
+  changeSortBy,
+  changeSortDirection,
+  fetchData,
+  sortByItems,
+  sortDirectionByItems,
+} from '../store/dataSlice';
+import { RootState } from '../store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../store/store';
 
 function TagList() {
-  const [tags, setTags] = useState<IItem[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
-  const [sortBy, setSortBy] = useState<IItemSortBy>({
-    value: 'activity',
-    label: 'Activity',
-  });
-  const [sortDirection, setSortDirection] = useState<IItemSortBy>({
-    value: 'desc',
-    label: 'Descending',
-  });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const data = useSelector((state: RootState) => state.data);
+  const currentPage = useSelector((state: RootState) => state.data.currentPage);
+  const itemsPerPage = useSelector(
+    (state: RootState) => state.data.itemsPerPage,
+  );
+  const sortBy = useSelector((state: RootState) => state.data.sortBy);
+  const sortDirection = useSelector(
+    (state: RootState) => state.data.sortDirection,
+  );
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(
-          `https://api.stackexchange.com/2.3/tags?order=${sortDirection.value}&sort=${sortBy.value}&site=stackoverflow&page=${currentPage}&pagesize=${itemsPerPage}`,
-        );
-
-        setTags(response.data.items);
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-
-        if (error instanceof Error) {
-          setError(error.message);
-        }
-      }
-    };
-
-    fetchData();
+    dispatch(
+      fetchData(
+        `https://api.stackexchange.com/2.3/tags?order=${sortDirection.value}&sort=${sortBy.value}&site=stackoverflow&page=${currentPage}&pagesize=${itemsPerPage}`,
+      ),
+    );
   }, [currentPage, itemsPerPage, sortBy, sortDirection]);
 
   const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
+    dispatch(changeCurrentPage(pageNumber));
   };
 
   const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setItemsPerPage(parseInt(e.target.value));
-    setCurrentPage(1);
+    dispatch(changeItemsPerPage(parseInt(e.target.value)));
+    dispatch(changeCurrentPage(1));
   };
 
-  if (error) {
-    return <MuiWrapper>Error fetching tags: {error}</MuiWrapper>;
+  if (data.error) {
+    return <MuiWrapper>Error fetching data: {data.error}</MuiWrapper>;
   }
 
-  if (loading) {
+  if (data.loading) {
     return <MuiWrapper>Loading...</MuiWrapper>;
   }
 
@@ -88,14 +65,14 @@ function TagList() {
         <MuiSelect
           title="field"
           sortBy={sortBy}
-          onChange={(o: IItemSortBy) => setSortBy(o)}
+          onChange={(o: IItemSortBy) => dispatch(changeSortBy(o))}
           sortByItems={sortByItems}
         />
         <MuiSelect
           style={{ marginLeft: '10px' }}
           title="direction"
           sortBy={sortDirection}
-          onChange={(o: IItemSortBy) => setSortDirection(o)}
+          onChange={(o: IItemSortBy) => dispatch(changeSortDirection(o))}
           sortByItems={sortDirectionByItems}
         />
       </div>
@@ -114,7 +91,7 @@ function TagList() {
             onClick={() => handlePageChange(currentPage - 1)}
           />
         )}
-        {tags.length === itemsPerPage && (
+        {data.data.length === itemsPerPage && (
           <MuiButton
             title="Next page"
             onClick={() => handlePageChange(currentPage + 1)}
@@ -122,11 +99,13 @@ function TagList() {
         )}
       </div>
       <List>
-        {tags.map((tag: IItem) => (
-          <ListItem key={tag.name}>
-            <ListItemText primary={`${tag.name} - Count: ${tag.count}`} />
-          </ListItem>
-        ))}
+        {!data.loading &&
+          data.data.length &&
+          data.data.map((tag: IItem) => (
+            <ListItem key={tag.name}>
+              <ListItemText primary={`${tag.name} - Count: ${tag.count}`} />
+            </ListItem>
+          ))}
       </List>
     </MuiWrapper>
   );
