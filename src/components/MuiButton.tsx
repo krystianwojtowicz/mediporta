@@ -1,13 +1,13 @@
 import { Button } from '@mui/material';
 
-export interface IButton {
+export type TMuiButton = {
   title: string;
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
-}
+};
 
-export const MuiButton = ({ title, onClick }: IButton) => {
+export const MuiButton = ({ title, onClick }: TMuiButton) => {
   return (
-    <Button variant="contained" onClick={onClick}>
+    <Button variant="contained" onClick={onClick} sx={{ margin: '10px 5px 0' }}>
       {title}
     </Button>
   );

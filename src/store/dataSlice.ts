@@ -1,21 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-export const sortByItems = [
-  { value: 'activity', label: 'Activity' },
-  { value: 'name', label: 'Name' },
-  { value: 'popular', label: 'Popular' },
-];
+export const sortByItems = ['activity', 'name', 'popular'];
 
-export interface IItemSortBy {
-  value: string;
-  label: string;
-}
-
-export const sortDirectionByItems = [
-  { value: 'desc', label: 'Descending' },
-  { value: 'asc', label: 'Ascending' },
-];
+export const sortDirectionByItems = ['desc', 'asc'];
 
 export interface IItem {
   count: number;
@@ -23,6 +11,7 @@ export interface IItem {
   is_moderator_only: boolean;
   is_required: boolean;
   name: string;
+  [key: string]: unknown;
 }
 
 interface DataState {
@@ -31,8 +20,8 @@ interface DataState {
   error: string | undefined;
   currentPage: number;
   itemsPerPage: number;
-  sortBy: IItemSortBy;
-  sortDirection: IItemSortBy;
+  sortBy: string;
+  sortDirection: string;
 }
 
 const initialState: DataState = {

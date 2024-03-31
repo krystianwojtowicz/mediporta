@@ -1,14 +1,18 @@
 import Box from '@mui/material/Box';
 
-interface IMuiWrapper {
+export type TMuiWrapper = {
   children: React.ReactNode;
-}
+};
 
-export const MuiWrapper = ({ children }: IMuiWrapper) => {
+export const MuiWrapper = ({ children }: TMuiWrapper) => {
   return (
     <Box
       sx={{
-        margin: '20px',
+        margin: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
       }}
     >
       {children}

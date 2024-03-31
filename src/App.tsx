@@ -1,5 +1,4 @@
-import TagList from './components/TagList';
-import './index.css';
+import { TagList } from './components/TagList';
 
 function App() {
   return (

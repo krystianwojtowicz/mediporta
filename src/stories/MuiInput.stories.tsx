@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
 import { Meta } from '@storybook/react';
-import { MuiInput, IMuiInput } from '../components/MuiInput';
+import { useState } from 'react';
+
+import { MuiInput, TMuiInput } from '../components/MuiInput';
 
 export default {
   component: MuiInput,
   title: 'MuiInput',
 } as Meta;
 
-const Template: React.FC<IMuiInput> = (args) => {
+const Template: React.FC<TMuiInput> = (args) => {
   return (
     <MuiInput
       itemsPerPage={args.itemsPerPage}

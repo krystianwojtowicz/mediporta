@@ -1,42 +1,43 @@
-import React, { useEffect } from 'react';
-import { MuiButton } from './MuiButton';
-import { MuiHeading6 } from './MuiHeading6';
-import { MuiWrapper } from './MuiWrapper';
-import { MuiSelect } from './MuiSelect';
-import { MuiLabel } from './MuiLabel';
-import { MuiInput } from './MuiInput';
 import { List, ListItem, ListItemText } from '@mui/material';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
 import {
-  IItem,
-  IItemSortBy,
   changeCurrentPage,
   changeItemsPerPage,
   changeSortBy,
   changeSortDirection,
   fetchData,
+  IItem,
   sortByItems,
   sortDirectionByItems,
 } from '../store/dataSlice';
-import { RootState } from '../store/store';
-import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store/store';
+import { RootState } from '../store/store';
+import { MuiButton } from './MuiButton';
+import { MuiHeading6 } from './MuiHeading6';
+import { MuiInput } from './MuiInput';
+import { MuiLabel } from './MuiLabel';
+import { MuiSelect } from './MuiSelect';
+import { MuiStack } from './MuiStack';
+import { MuiWrapper } from './MuiWrapper';
 
-function TagList() {
+export const TagList = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const data = useSelector((state: RootState) => state.data);
-  const currentPage = useSelector((state: RootState) => state.data.currentPage);
-  const itemsPerPage = useSelector(
-    (state: RootState) => state.data.itemsPerPage,
-  );
-  const sortBy = useSelector((state: RootState) => state.data.sortBy);
-  const sortDirection = useSelector(
-    (state: RootState) => state.data.sortDirection,
-  );
+  const {
+    data,
+    currentPage,
+    itemsPerPage,
+    sortBy,
+    sortDirection,
+    loading,
+    error,
+  } = useSelector((state: RootState) => state.data);
 
   useEffect(() => {
     dispatch(
       fetchData(
-        `https://api.stackexchange.com/2.3/tags?order=${sortDirection.value}&sort=${sortBy.value}&site=stackoverflow&page=${currentPage}&pagesize=${itemsPerPage}`,
+        `https://api.stackexchange.com/2.3/tags?order=${sortDirection}&sort=${sortBy}&site=stackoverflow&page=${currentPage}&pagesize=${itemsPerPage}`,
       ),
     );
   }, [currentPage, itemsPerPage, sortBy, sortDirection]);
@@ -50,32 +51,39 @@ function TagList() {
     dispatch(changeCurrentPage(1));
   };
 
-  if (data.error) {
-    return <MuiWrapper>Error fetching data: {data.error}</MuiWrapper>;
+  if (error) {
+    return (
+      <MuiWrapper>
+        <MuiHeading6 title={`Error fetching data: ${error}`} />
+      </MuiWrapper>
+    );
   }
 
-  if (data.loading) {
-    return <MuiWrapper>Loading...</MuiWrapper>;
+  if (loading) {
+    return (
+      <MuiWrapper>
+        <MuiHeading6 title="Loading..." />
+      </MuiWrapper>
+    );
   }
 
   return (
     <MuiWrapper>
       <MuiHeading6 title="Tag Browser" />
-      <div>
+      <MuiStack>
         <MuiSelect
           title="field"
           sortBy={sortBy}
-          onChange={(o: IItemSortBy) => dispatch(changeSortBy(o))}
+          onChange={(option: string) => dispatch(changeSortBy(option))}
           sortByItems={sortByItems}
         />
         <MuiSelect
-          style={{ marginLeft: '10px' }}
           title="direction"
           sortBy={sortDirection}
-          onChange={(o: IItemSortBy) => dispatch(changeSortDirection(o))}
+          onChange={(option: string) => dispatch(changeSortDirection(option))}
           sortByItems={sortDirectionByItems}
         />
-      </div>
+      </MuiStack>
       <div>
         <MuiLabel title="Items per page:">
           <MuiInput
@@ -91,7 +99,7 @@ function TagList() {
             onClick={() => handlePageChange(currentPage - 1)}
           />
         )}
-        {data.data.length === itemsPerPage && (
+        {data.length === itemsPerPage && (
           <MuiButton
             title="Next page"
             onClick={() => handlePageChange(currentPage + 1)}
@@ -99,9 +107,9 @@ function TagList() {
         )}
       </div>
       <List>
-        {!data.loading &&
-          data.data.length &&
-          data.data.map((tag: IItem) => (
+        {!loading &&
+          data.length &&
+          data.map((tag: IItem) => (
             <ListItem key={tag.name}>
               <ListItemText primary={`${tag.name} - Count: ${tag.count}`} />
             </ListItem>
@@ -109,6 +117,4 @@ function TagList() {
       </List>
     </MuiWrapper>
   );
-}
-
-export default TagList;
+};

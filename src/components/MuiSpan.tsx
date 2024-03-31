@@ -1,9 +1,9 @@
 import Typography from '@mui/material/Typography';
 
-interface ISpan {
+export type TMuiSpan = {
   title: string;
-}
+};
 
-export const MuiSpan = ({ title }: ISpan) => {
+export const MuiSpan = ({ title }: TMuiSpan) => {
   return <Typography variant="body1">{title}</Typography>;
 };

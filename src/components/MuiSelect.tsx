@@ -1,12 +1,10 @@
-import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-import { IItemSortBy } from '../store/dataSlice';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 
-export type IMuiSelect = {
-  sortByItems: IItemSortBy[];
-  onChange: (value: IItemSortBy) => void;
-  sortBy: IItemSortBy;
+export type TMuiSelect = {
+  sortByItems: string[];
+  onChange: (arg: string) => void;
+  sortBy: string;
   title: string;
-  style?: React.CSSProperties;
 };
 
 export const MuiSelect = ({
@@ -14,22 +12,17 @@ export const MuiSelect = ({
   sortBy,
   sortByItems,
   title,
-  style,
-}: IMuiSelect) => {
-  const selectOption = (option: IItemSortBy) => {
+}: TMuiSelect) => {
+  const selectOption = (option: string) => {
     onChange(option);
   };
   return (
-    <FormControl style={style}>
+    <FormControl sx={{ width: '150px' }}>
       <InputLabel id="sort-by-label">Sort by {title}</InputLabel>
-      <Select labelId="sort-by-label" id="sort-by" value={sortBy.value}>
-        {sortByItems.map((item: IItemSortBy) => (
-          <MenuItem
-            key={item.value}
-            value={item.value}
-            onClick={() => selectOption(item)}
-          >
-            {item.label}
+      <Select labelId="sort-by-label" id="sort-by" value={sortBy}>
+        {sortByItems.map((item: string) => (
+          <MenuItem key={item} value={item} onClick={() => selectOption(item)}>
+            {item}
           </MenuItem>
         ))}
       </Select>
