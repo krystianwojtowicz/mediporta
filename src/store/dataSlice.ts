@@ -8,7 +8,6 @@ export const sortDirectionByItems = ['desc', 'asc'];
 export interface IItem {
   count: number;
   name: string;
-  [key: string]: unknown;
 }
 
 interface DataState {
@@ -36,7 +35,12 @@ export const fetchData = createAsyncThunk(
   async (apiUrl: string) => {
     try {
       const response = await axios.get(apiUrl);
-      return response.data.items;
+      return response.data.items.map(
+        (item: { name: string; count: number }) => ({
+          name: item.name,
+          count: item.count,
+        }),
+      );
     } catch (error) {
       throw new Error('Failed to fetch data');
     }
