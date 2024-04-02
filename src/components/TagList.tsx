@@ -111,7 +111,7 @@ export const TagList = () => {
           data.length &&
           data.map((tag: IItem) => (
             <ListItem key={tag.name}>
-              <ListItemText primary={`${tag.name} - Count: ${tag.count}`} />
+              <ListItemText primary={`${tag.name}: ${tag.count}`} />
             </ListItem>
           ))}
       </List>

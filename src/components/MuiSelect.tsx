@@ -17,7 +17,7 @@ export const MuiSelect = ({
     onChange(option);
   };
   return (
-    <FormControl sx={{ width: '150px' }}>
+    <FormControl sx={{ width: '150px', margin: '10px 0' }}>
       <InputLabel id="sort-by-label">Sort by {title}</InputLabel>
       <Select labelId="sort-by-label" id="sort-by" value={sortBy}>
         {sortByItems.map((item: string) => (

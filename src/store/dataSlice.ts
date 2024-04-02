@@ -7,9 +7,6 @@ export const sortDirectionByItems = ['desc', 'asc'];
 
 export interface IItem {
   count: number;
-  has_synonyms: boolean;
-  is_moderator_only: boolean;
-  is_required: boolean;
   name: string;
   [key: string]: unknown;
 }
